@@ -353,19 +353,46 @@ label { font-weight: 700; }
   height: auto;
   pointer-events: none;
 }
+.gem.is-loading {
+  pointer-events: none;
+}
+.gem.is-loading img {
+  opacity: 0;
+}
+.gem-loader {
+  display: none;
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 42%;
+  aspect-ratio: 1;
+  margin: 0;
+  border-radius: 50%;
+  border: 4px solid rgba(255, 205, 30, 0.22);
+  border-top-color: #ffcd1e;
+  transform: translate(-50%, -50%);
+}
+.gem.is-loading .gem-loader {
+  display: block;
+  animation: gemspin 0.7s linear infinite;
+}
+@keyframes gemspin {
+  to { transform: translate(-50%, -50%) rotate(360deg); }
+}
 .gem:active { transform: scale(0.96); }
 .flo {
   position: absolute;
   left: 50%;
-  top: 10%;
+  top: 50%;
   color: #ffdf00;
   font-weight: 700;
   font-size: 22px;
   pointer-events: none;
+  transform: translate(-50%, -50%);
   animation: float 0.7s ease forwards;
 }
 @keyframes float {
-  to { transform: translate(-50%, -36px); opacity: 0; }
+  to { transform: translate(-50%, calc(-50% - 40px)); opacity: 0; }
 }
 .combo { text-align: center; color: var(--gold); min-height: 1.4em; font-size: 20px; }
 
@@ -478,5 +505,5 @@ label { font-weight: 700; }
 
 :focus-visible { outline: 2px solid #ffcd1e; outline-offset: 2px; }
 @media (prefers-reduced-motion: reduce) {
-  .flip, .flo, .toast, .field.shake { animation: none; transition: none; }
+  .flip, .flo, .toast, .field.shake, .gem-loader { animation: none; transition: none; }
 }

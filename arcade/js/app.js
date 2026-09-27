@@ -315,7 +315,7 @@
         "</button>" +
         card("field", "1 энергия", "Алмазное поле", "25 клеток, 5 мин. Забирай банк, пока не открыл мину.", "Рекорд " + state.best.field) +
         card("pairs", "1 энергия", "Найди пару", "6 пар питомцев, 70 секунд. Закрытие поля платит сверху.", "Рекорд " + state.best.pairs) +
-        card("clicker", "бесплатно", "Кликер", "Комбо растит монету. Каждые 100 монет — сундук. Обмен с 100.", "Комбо " + state.best.combo) +
+        card("clicker", "бесплатно", "Кликер", "Комбо растит монету. Каждые 100 монет — сундук. Обмен: 100 → 1 алмаз.", "Комбо " + state.best.combo) +
         card("roulette", "1 энергия", "Рулетка", "Полоса призов: алмазы и шансы.", "Рекорд " + state.best.spin) +
         "</div>" +
         '<section class="panel"><h2 class="home-panel__title">Лавка</h2>' +
@@ -777,17 +777,27 @@
   function playClicker(signal) {
     var combo = 0;
     var last = 0;
-    var lv = levelState(state.xp).level;
-    var rate = 25 + (lv - 1) * 3;
     app.innerHTML = frame(
       "Кликер",
-      '<p class="hint">Тап по монете. Комбо копится, если бить быстрее 0.9 с. Обмен: 100 монет → <span id="rate">' + rate + "</span>.</p>" +
+      '<p class="hint">Тап по монете. Комбо копится, если бить быстрее 0.9 с. Обмен: 100 монет → 1 алмаз.</p>' +
       '<p class="combo" id="combo">Комбо 0</p>' +
-      '<div class="gemwrap"><button type="button" class="gem" id="gem" aria-label="Монета"><img src="assets/img/coin.png" alt="" draggable="false"></button></div>' +
+      '<div class="gemwrap"><button type="button" class="gem is-loading" id="gem" aria-label="Монета" disabled><span class="gem-loader" aria-hidden="true"></span><img src="assets/img/coin.png" alt="" draggable="false"></button></div>' +
       '<div class="row"><button type="button" class="cta gold" data-act="exchange">Обменять 100</button></div>'
     );
 
-    app.querySelector("#gem").addEventListener("dragstart", function (e) {
+    var coinButton = app.querySelector("#gem");
+    var coinImage = coinButton.querySelector("img");
+    function showCoin() {
+      coinButton.classList.remove("is-loading");
+      coinButton.disabled = false;
+    }
+    if (coinImage.complete && coinImage.naturalWidth) showCoin();
+    else {
+      coinImage.addEventListener("load", showCoin, { signal: signal });
+      coinImage.addEventListener("error", showCoin, { signal: signal });
+    }
+
+    coinButton.addEventListener("dragstart", function (e) {
       e.preventDefault();
     }, { signal: signal });
     app.querySelector("#gem").addEventListener("pointerdown", function (e) {
@@ -814,9 +824,12 @@
       save();
       paintWallet();
       document.getElementById("combo").textContent = "Комбо " + combo + " · +" + gain;
+      var rect = e.currentTarget.getBoundingClientRect();
       var flo = document.createElement("span");
       flo.className = "flo";
       flo.textContent = "+" + gain;
+      flo.style.left = (e.clientX - rect.left) + "px";
+      flo.style.top = (e.clientY - rect.top) + "px";
       e.currentTarget.appendChild(flo);
       setTimeout(function () { flo.remove(); }, 700);
     }, { signal: signal });
@@ -828,13 +841,12 @@
         toast("Нужно 100 монет");
         return;
       }
-      var out = 25 + (levelState(state.xp).level - 1) * 3;
       state.coins -= 100;
-      state.diamonds += out;
-      addXp(8);
+      state.diamonds += 1;
+      addXp(2);
       save();
       paintWallet();
-      toast("Обмен +" + out);
+      toast("Обмен +1");
     }, { signal: signal });
   }
 
@@ -937,10 +949,6 @@
   }
 
   function playRoulette(signal) {
-    if (!spendEnergy()) {
-      showLobby();
-      return;
-    }
     var spinning = false;
     var landed = false;
     var forceItem = dropOffer && dropOffer.prize && !dropOffer.done && dropOffer.spins + 1 === dropOffer.target;
@@ -950,12 +958,10 @@
     var cards = strip.map(function (prize) {
       return '<div class="prize"><img src="' + esc(prize.img) + '" alt=""><span>' + esc(prize.title) + "</span></div>";
     }).join("");
-    var hint = "Приз останавливается на жёлтой риске. Только алмазы и шансы.";
-    if (dropOffer && !dropOffer.done) hint = "Прокрут " + (dropOffer.spins + 1) + ". Предмет выпадает на одном из прокрутов с 3-го по 5-й.";
     app.innerHTML = frame(
       "Рулетка",
       '<img class="kelly" src="assets/img/Kelly-GIF__ff.gif" alt="">' +
-      '<p class="hint">' + hint + "</p>" +
+      '<p class="hint">Приз останавливается на жёлтой риске.</p>' +
       '<div class="wheel" id="wheel"><div class="track" id="track">' + cards + "</div></div>" +
       '<div class="row"><button type="button" class="cta gold" id="spin">Крутить</button></div>'
     );
@@ -992,8 +998,8 @@
       } else if (prize.kind === "chance") {
         var spins = prize.amount || 1;
         state.energy = Math.min(ENERGY_CAP, state.energy + spins);
-        notes = ["шанс +" + spins];
-        addXp(8);
+        notes = ["энергия +" + spins];
+        addXp(4);
       }
       state.stats.spins += 1;
       if (amount > state.best.spin) state.best.spin = amount;
@@ -1008,6 +1014,8 @@
 
     document.getElementById("spin").addEventListener("click", function () {
       if (spinning) return;
+      if (!spendEnergy()) return;
+      paintWallet();
       spinning = true;
       this.disabled = true;
       var chosen = pickIndex();
@@ -1047,7 +1055,6 @@
     app.addEventListener("click", function (e) {
       if (e.target.closest("[data-act=back]")) {
         if (spinning && !landed) return;
-        if (!spinning) refundEnergy();
         showLobby();
       }
     }, { signal: signal });
