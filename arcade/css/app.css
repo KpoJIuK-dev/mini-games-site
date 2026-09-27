@@ -460,6 +460,20 @@ label { font-weight: 700; }
   color: var(--gold);
   font-size: clamp(32px, 8vw, 48px);
 }
+.profile-banner {
+  width: 100%;
+  height: auto;
+  border-radius: 8px;
+  display: block;
+  margin: 0 0 12px;
+}
+.drop-icon {
+  width: 96px;
+  height: 96px;
+  object-fit: contain;
+  display: block;
+  margin: 8px auto;
+}
 .eyebrow { color: var(--gold); font-weight: 700; }
 
 :focus-visible { outline: 2px solid #ffcd1e; outline-offset: 2px; }

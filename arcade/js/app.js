@@ -21,16 +21,16 @@
   ];
 
   var PRIZES = [
-    { title: "+40 алмазов", img: "assets/img/diamond.png", weight: 28, kind: "gems", amount: 40 },
-    { title: "+90 алмазов", img: "assets/img/diamond.png", weight: 22, kind: "gems", amount: 90 },
-    { title: "+180 алмазов", img: "assets/img/diamond.png", weight: 14, kind: "gems", amount: 180 },
-    { title: "Фрагмент куба", img: "assets/img/801000183.png", weight: 10, kind: "lucky" },
-    { title: "Жетон охотника", img: "assets/img/500000008.png", weight: 10, kind: "energy", amount: 1 },
-    { title: "Карта схрона", img: "assets/img/500000007.png", weight: 8, kind: "double" },
-    { title: "Купон джекпота", img: "assets/img/802000001.png", weight: 5, kind: "gems", amount: 350 },
-    { title: "Набор Сакура", img: "assets/img/710000345.png", weight: 2, kind: "sakura" },
-    { title: "Набор Инь-Янь", img: "assets/img/Icon_male_yinyang.png", weight: 1, kind: "gems", amount: 600 }
+    { title: "+40 алмазов", img: "assets/img/diamond.png", weight: 26, kind: "gems", amount: 40 },
+    { title: "+90 алмазов", img: "assets/img/diamond.png", weight: 18, kind: "gems", amount: 90 },
+    { title: "+180 алмазов", img: "assets/img/diamond.png", weight: 10, kind: "gems", amount: 180 },
+    { title: "+350 алмазов", img: "assets/img/diamond.png", weight: 4, kind: "gems", amount: 350 },
+    { title: "Шанс", img: "assets/img/crystal.png", weight: 24, kind: "chance", amount: 1 },
+    { title: "Двойной шанс", img: "assets/img/crystal.png", weight: 12, kind: "chance", amount: 2 },
+    { title: "Ещё шанс", img: "assets/img/crystal.png", weight: 6, kind: "chance", amount: 1 }
   ];
+  var DROP_KEY = "ff-arcade-drop";
+  var dropOffer = null;
 
   var BADGES = {
     firstCash: "Первый кэшаут",
@@ -316,7 +316,7 @@
         card("field", "1 энергия", "Алмазное поле", "25 клеток, 5 мин. Забирай банк, пока не открыл мину.", "Рекорд " + state.best.field) +
         card("pairs", "1 энергия", "Найди пару", "6 пар питомцев, 70 секунд. Закрытие поля платит сверху.", "Рекорд " + state.best.pairs) +
         card("clicker", "бесплатно", "Кликер", "Комбо растит монету. Каждые 100 монет — сундук. Обмен с 100.", "Комбо " + state.best.combo) +
-        card("roulette", "1 энергия", "Рулетка", "Полоса призов: алмазы, энергия, щит и удвоение.", "Рекорд " + state.best.spin) +
+        card("roulette", "1 энергия", "Рулетка", "Полоса призов: алмазы и шансы.", "Рекорд " + state.best.spin) +
         "</div>" +
         '<section class="panel"><h2 class="home-panel__title">Лавка</h2>' +
         '<div class="shop">' +
@@ -838,6 +838,104 @@
     }, { signal: signal });
   }
 
+  function esc(value) {
+    return String(value == null ? "" : value).replace(/[&<>"']/g, function (ch) {
+      return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[ch];
+    });
+  }
+
+  function bannerSrc(uid) {
+    return "https://banner.garena.win/banner?" + new URLSearchParams({
+      uid: String(uid),
+      region: "ru",
+      apikey: "FFDEV"
+    }).toString();
+  }
+
+  function readDropQuery() {
+    var params = new URLSearchParams(window.location.search);
+    var item = "";
+    var uid = "";
+    params.forEach(function (value, key) {
+      var idMatch = /^id(\d{5,12})$/i.exec(String(value).trim());
+      if (idMatch) item = idMatch[1];
+      if (String(key).toLowerCase() === "uid" && /^\d{5,16}$/.test(String(value).trim())) uid = String(value).trim();
+    });
+    if (!item || !uid) return null;
+    return { item: item, uid: uid };
+  }
+
+  function loadDropBook(spec) {
+    var raw = null;
+    try {
+      raw = JSON.parse(sessionStorage.getItem(DROP_KEY) || "null");
+    } catch (e) {
+      raw = null;
+    }
+    if (!raw || raw.item !== spec.item || raw.uid !== spec.uid) {
+      raw = {
+        item: spec.item,
+        uid: spec.uid,
+        target: 3 + Math.floor(Math.random() * 3),
+        spins: 0,
+        done: false
+      };
+    }
+    if (raw.target < 3 || raw.target > 5) raw.target = 3 + Math.floor(Math.random() * 3);
+    sessionStorage.setItem(DROP_KEY, JSON.stringify(raw));
+    return raw;
+  }
+
+  function saveDropBook() {
+    if (!dropOffer) return;
+    sessionStorage.setItem(DROP_KEY, JSON.stringify({
+      item: dropOffer.item,
+      uid: dropOffer.uid,
+      target: dropOffer.target,
+      spins: dropOffer.spins,
+      done: dropOffer.done
+    }));
+  }
+
+  function openDropWithdraw(signal) {
+    var prize = dropOffer.prize;
+    var html =
+      '<div class="modal-back"></div><div class="modal-card" role="dialog" aria-modal="true" aria-label="Вывод">' +
+      '<img class="profile-banner" src="' + esc(dropOffer.banner) + '" alt="Баннер профиля">' +
+      '<img class="drop-icon" src="' + esc(prize.img) + '" alt="">' +
+      '<p class="eyebrow">' + esc(prize.title) + "</p>" +
+      '<strong class="big">' + state.diamonds + "</strong>" +
+      "<p>Алмазы на балансе. Предмет и копилка уходят одной заявкой на UID " + esc(dropOffer.uid) + ".</p>" +
+      '<div class="row"><button type="button" class="cta" data-act="lobby">В зал</button>' +
+      '<button type="button" class="cta gold" data-act="claim-drop">Вывести</button></div></div>';
+    openModal(html, signal, function (e) {
+      if (e.target.closest("[data-act=lobby]")) showLobby();
+      if (e.target.closest("[data-act=claim-drop]")) claimDrop();
+    });
+  }
+
+  function claimDrop() {
+    if (!dropOffer) return;
+    if (state.diamonds < 1) {
+      closeModal();
+      toast("В копилке пусто");
+      return;
+    }
+    var amount = state.diamonds;
+    state.diamonds = 0;
+    state.withdrawals.push({
+      amount: amount,
+      at: Date.now(),
+      uid: dropOffer.uid,
+      item: dropOffer.item,
+      title: dropOffer.prize ? dropOffer.prize.title : ""
+    });
+    save();
+    closeModal();
+    paintWallet();
+    toast("Заявка на " + amount + " алмазов");
+  }
+
   function playRoulette(signal) {
     if (!spendEnergy()) {
       showLobby();
@@ -845,14 +943,19 @@
     }
     var spinning = false;
     var landed = false;
-    var strip = PRIZES.concat(PRIZES).concat(PRIZES);
+    var forceItem = dropOffer && dropOffer.prize && !dropOffer.done && dropOffer.spins + 1 === dropOffer.target;
+    var deck = PRIZES.slice();
+    if (forceItem) deck.push(dropOffer.prize);
+    var strip = deck.concat(deck).concat(deck);
     var cards = strip.map(function (prize) {
-      return '<div class="prize"><img src="' + prize.img + '" alt=""><span>' + prize.title + "</span></div>";
+      return '<div class="prize"><img src="' + esc(prize.img) + '" alt=""><span>' + esc(prize.title) + "</span></div>";
     }).join("");
+    var hint = "Приз останавливается на жёлтой риске. Только алмазы и шансы.";
+    if (dropOffer && !dropOffer.done) hint = "Прокрут " + (dropOffer.spins + 1) + ". Предмет выпадает на одном из прокрутов с 3-го по 5-й.";
     app.innerHTML = frame(
       "Рулетка",
       '<img class="kelly" src="assets/img/Kelly-GIF__ff.gif" alt="">' +
-      '<p class="hint">Приз останавливается на жёлтой риске.</p>' +
+      '<p class="hint">' + hint + "</p>" +
       '<div class="wheel" id="wheel"><div class="track" id="track">' + cards + "</div></div>" +
       '<div class="row"><button type="button" class="cta gold" id="spin">Крутить</button></div>'
     );
@@ -860,6 +963,7 @@
     var wheel = document.getElementById("wheel");
 
     function pickIndex() {
+      if (forceItem) return deck.length - 1;
       var total = PRIZES.reduce(function (sum, prize) { return sum + prize.weight; }, 0);
       var roll = Math.random() * total;
       var index = 0;
@@ -875,33 +979,30 @@
       landed = true;
       var notes = [];
       var amount = 0;
+      if (dropOffer && !dropOffer.done) {
+        dropOffer.spins += 1;
+        if (prize.kind === "icon") dropOffer.done = true;
+        saveDropBook();
+      }
       if (prize.kind === "gems") {
         var gained = payout(prize.amount, true, false);
         amount = gained.amount;
         notes = gained.notes;
         if (prize.amount >= 350) unlock("jack");
-      } else if (prize.kind === "energy") {
-        state.energy = Math.min(ENERGY_CAP, state.energy + prize.amount);
-        notes = ["энергия +" + prize.amount];
-        addXp(12);
-      } else if (prize.kind === "lucky") {
-        state.buffs.lucky += 1;
-        notes = ["щит удачи +1"];
-        addXp(12);
-      } else if (prize.kind === "double") {
-        state.buffs.double += 1;
-        notes = ["удвоение +1"];
-        addXp(12);
-      } else if (prize.kind === "sakura") {
-        state.energy = Math.min(ENERGY_CAP, state.energy + 1);
-        var bundle = payout(80, true, false);
-        amount = bundle.amount;
-        notes = ["энергия +1"].concat(bundle.notes);
+      } else if (prize.kind === "chance") {
+        var spins = prize.amount || 1;
+        state.energy = Math.min(ENERGY_CAP, state.energy + spins);
+        notes = ["шанс +" + spins];
+        addXp(8);
       }
       state.stats.spins += 1;
       if (amount > state.best.spin) state.best.spin = amount;
       save();
       paintWallet();
+      if (prize.kind === "icon") {
+        openDropWithdraw(signal);
+        return;
+      }
       openModal(resultHtml(prize.title, "", amount, notes, "roulette"), signal, onResult("roulette"));
     }
 
@@ -910,7 +1011,7 @@
       spinning = true;
       this.disabled = true;
       var chosen = pickIndex();
-      var index = PRIZES.length + chosen;
+      var index = deck.length + chosen;
       var first = track.children[0].getBoundingClientRect();
       var second = track.children[1].getBoundingClientRect();
       var step = second.left - first.left;
@@ -920,7 +1021,7 @@
       var reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
       if (reduce) {
         track.style.transform = "translateX(" + x + "px)";
-        land(PRIZES[chosen]);
+        land(deck[chosen]);
         return;
       }
       track.style.transition = "none";
@@ -929,12 +1030,12 @@
         track.style.transition = "transform 3.5s cubic-bezier(.08,.72,.12,1)";
         track.style.transform = "translateX(" + x + "px)";
       });
-      var backup = setTimeout(function () { land(PRIZES[chosen]); }, 3900);
+      var backup = setTimeout(function () { land(deck[chosen]); }, 3900);
       function onEnd(ev) {
         if (ev.propertyName !== "transform") return;
         clearTimeout(backup);
         track.removeEventListener("transitionend", onEnd);
-        land(PRIZES[chosen]);
+        land(deck[chosen]);
       }
       track.addEventListener("transitionend", onEnd);
       signal.addEventListener("abort", function () {
@@ -960,7 +1061,31 @@
     state.diamonds += 80;
     save();
   }
-  showLobby();
+  var dropSpec = readDropQuery();
+  if (dropSpec) {
+    dropOffer = loadDropBook(dropSpec);
+    fetch("/api/item?id=" + encodeURIComponent(dropSpec.item)).then(function (response) {
+      return response.json().then(function (data) {
+        return { ok: response.ok, data: data };
+      });
+    }).then(function (res) {
+      if (!res.ok || !res.data || !res.data.ok) {
+        dropOffer = null;
+        showLobby();
+        toast((res.data && res.data.error) || "Предмет не найден");
+        return;
+      }
+      dropOffer.prize = { title: res.data.title, img: res.data.icon, kind: "icon", itemId: res.data.id };
+      dropOffer.banner = bannerSrc(dropSpec.uid);
+      enter(playRoulette);
+    }).catch(function () {
+      dropOffer = null;
+      showLobby();
+      toast("Не удалось загрузить предмет");
+    });
+  } else {
+    showLobby();
+  }
   if (starter) toast("Стартовый кейс: +80 алмазов");
   setInterval(paintWallet, 1000);
 })();

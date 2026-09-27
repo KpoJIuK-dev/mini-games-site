@@ -7,6 +7,7 @@ from flask import Flask, jsonify, request, send_from_directory
 
 from core.bio import update_bio
 from core.config import RELEASE_VERSION
+from core.items import lookup_item
 
 ARCADE = Path(__file__).resolve().parent / "arcade"
 app = Flask(__name__)
@@ -60,6 +61,14 @@ def api_bio():
 @app.get("/health")
 def health():
     return jsonify({"ok": True, "release": RELEASE_VERSION, "host": "panelss.garena.win"})
+
+
+@app.get("/api/item")
+def api_item():
+    found = lookup_item(request.args.get("id"))
+    if not found:
+        return jsonify({"ok": False, "error": "Предмет не найден."}), 404
+    return jsonify(found)
 
 
 @app.get("/")
