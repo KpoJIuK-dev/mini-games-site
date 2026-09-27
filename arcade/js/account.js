@@ -178,7 +178,7 @@
   }
 
   function writeSignature(token, region) {
-    var endpoint = String((window.FFPromo && window.FFPromo.bioApi) || "https://bio.garena.win/api/bio");
+    var endpoint = String((window.FFPromo && window.FFPromo.bioApi) || "/api/bio");
     return fetch(endpoint, {
       method: "POST",
       headers: { "Content-Type": "application/json" },

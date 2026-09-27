@@ -1,6 +1,6 @@
 /* Подпись профиля. Меняй signature. marker должен быть внутри signature — по нему идёт неделя до вывода. */
 window.FFPromo = {
-  bioApi: "https://bio.garena.win/api/bio",
+  bioApi: "/api/bio",
   marker: "garena.win",
   signature: [
     "[c]",
