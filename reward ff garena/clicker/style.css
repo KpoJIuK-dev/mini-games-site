@@ -1,0 +1,275 @@
+/* ===================== Общие стили ===================== */
+html {
+  font-size: 4vw; /* Адаптивный базовый размер шрифта */
+}
+body {
+  margin: 0;
+  padding: 0;
+  font-family: Arial, sans-serif;
+  /* Можно использовать фон из ассетов или плоский цвет */
+  background: #87CEEB;
+  text-align: center;
+}
+
+/* ===================== Стили Clicker Game ===================== */
+#rightCharacter {
+  position: fixed;
+  top: 0;
+  right: -10vw;
+  height: 100vh;
+  object-fit: cover;
+  pointer-events: none;
+  user-select: none;
+  z-index: 1;
+}
+
+.app-container {
+  position: relative;
+  z-index: 2;
+  margin: 2vw;
+  width: calc(100% - 4vw);
+}
+
+.header-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2vw;
+  margin-bottom: 2vw;
+}
+
+h1 {
+  color: #fff;
+  border-bottom: 0.3vw solid #fff;
+  padding-bottom: 1vw;
+  font-size: 8vw;
+}
+
+.counters {
+  margin-top: 2vw;
+  display: flex;
+  justify-content: center;
+  gap: 3vw;
+  flex-wrap: wrap;
+}
+
+.counter-item {
+  border: 0.3vw solid #fff;
+  border-radius: 1vw;
+  padding: 2vw 14vw;
+  background-color: rgba(0, 0, 0, 0.3);
+  display: inline-flex;
+  align-items: center;
+  gap: 1vw;
+  font-size: 6vw;
+  color: #fff;
+}
+
+.counter-item img {
+  width: 6vw;
+}
+
+.coin-container {
+  position: relative;
+  display: inline-block;
+  border: 0.3vw solid #fff;
+  border-radius: 1vw;
+  padding: 8vw;
+  background-color: rgba(0, 0, 0, 0.3);
+}
+
+#coinImage {
+  width: 70vw;
+  cursor: pointer;
+  transition: transform 0.2s;
+  user-select: none;
+}
+
+#coinImage:hover {
+  transform: scale(1.1);
+}
+
+/* Кнопки */
+#openModalButton, #startPairGameButton {
+  margin-top: 3vw;
+  padding: 4vw 10vw;
+  font-size: 8vw;
+  background-color: #ff9800;
+  border: 0.3vw solid #ff9800;
+  border-radius: 1vw;
+  color: #fff;
+  cursor: pointer;
+  transition: background-color 0.3s, border-color 0.3s;
+}
+#openModalButton:hover, #startPairGameButton:hover {
+  background-color: #e68900;
+  border-color: #e68900;
+}
+
+/* ===================== Модальные окна ===================== */
+.modal {
+  display: none;
+  position: fixed;
+  z-index: 1000;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  overflow: auto;
+  background-color: rgba(0,0,0,0.5);
+}
+
+.modal-content {
+  background-color: #fefefe;
+  width: 80%;
+  max-width: 60rem;
+  margin: 10% auto;
+  padding: 3vw;
+  border-radius: 1vw;
+  text-align: center;
+  position: relative;
+  border: 0.3vw solid #ccc;
+}
+
+.close {
+  color: #aaa;
+  position: absolute;
+  right: 2vw;
+  top: 1vw;
+  font-size: 6vw;
+  font-weight: bold;
+  cursor: pointer;
+}
+.close:hover,
+.close:focus {
+  color: #000;
+}
+
+/* Стили для обмена */
+.withdraw-amount-container {
+  margin-top: 1.5vw;
+}
+
+.amount-options {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 2vw;
+  justify-content: center;
+  margin-top: 2vw;
+}
+
+.amount-option {
+  display: inline-flex;
+  align-items: center;
+  gap: 1vw;
+  cursor: pointer;
+  border: 0.3vw solid #ccc;
+  border-radius: 1vw;
+  padding: 2vw 4vw;
+  transition: background-color 0.3s, border-color 0.3s;
+  font-size: 4vw;
+}
+
+.amount-option img {
+  width: 5vw;
+}
+
+.amount-option:hover {
+  background-color: #f0f0f0;
+  border-color: #999;
+}
+
+.amount-option.available {
+  background-color: #d1f7d1;
+  border-color: #4CAF50;
+}
+
+.amount-option.unavailable {
+  background-color: #f7d1d1;
+  border-color: #f44336;
+}
+
+/* ===================== Стили игры "Найди пару" ===================== */
+.game-board {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  margin-top: 1vw;
+}
+
+.game-board .card {
+  width: calc(100% / 6 - 10px);
+  height: calc(100% / 8 - 10px);
+  margin: 5px;
+  position: relative;
+  cursor: pointer;
+  border-radius: 10px;
+  overflow: hidden;
+}
+
+.game-board .card .inside {
+  width: 100%;
+  height: 100%;
+  transition: transform 0.4s ease-in-out;
+  transform-style: preserve-3d;
+  background: white;
+  border: 2px solid #8A2BE2;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.game-board .card .front,
+.game-board .card .back {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  backface-visibility: hidden;
+  border-radius: 10px;
+}
+
+.game-board .card .front {
+  transform: rotateY(-180deg);
+  background: #f0f0f0;
+}
+
+.game-board .card .back {
+  background: #6285c9;
+}
+
+/* При перевороте карточки */
+.game-board .card.flipped .inside {
+  transform: rotateY(180deg);
+}
+
+@keyframes matchAnim {
+  0% { background: #bcffcc; }
+  100% { background: white; }
+}
+
+.game-board .card.matched .inside {
+  animation: 1s matchAnim ease-in-out;
+  animation-delay: 0.4s;
+}
+
+/* Результат игры "Найди пару" */
+.game-result {
+  margin-top: 2vw;
+  font-size: 5vw;
+}
+
+.game-result button {
+  margin-top: 1vw;
+  padding: 2vw 4vw;
+  font-size: 4vw;
+  background-color: #4CAF50;
+  border: 0.3vw solid #4CAF50;
+  border-radius: 1vw;
+  color: #fff;
+  cursor: pointer;
+}
+
+.game-result button:hover {
+  background-color: #45a049;
+}

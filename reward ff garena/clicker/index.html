@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <!-- Адаптивность под мобильные устройства -->
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>FF Coin Clicker &amp; Найди пару</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <!-- Элементы кликера -->
+  <img id="rightCharacter" src="./assets/image/right.webp" alt="Right character">
+
+  <!-- Прелоадер -->
+  <div id="preloader">
+    <img src="./assets/image/loader.gif" alt="Загрузка...">
+  </div>
+
+  <!-- Контейнер для тостов -->
+  <div id="toastContainer"></div>
+
+  <!-- Основной контейнер кликера -->
+  <div class="app-container">
+    <div class="header-container">
+      <h1>Free Fire Coin Clicker</h1>
+      <!-- Счётчики: монеты и алмазы -->
+      <div class="counters">
+        <div class="counter-item" id="coinDisplay">
+          <img src="./assets/image/coin.gif" alt="Coin">
+          <span>0</span>
+        </div>
+        <div class="counter-item" id="diamondDisplay">
+          <img src="./assets/image/diamond.gif" alt="Diamond">
+          <span>0</span>
+        </div>
+      </div>
+      <!-- Контейнер монеты -->
+      <div class="coin-container" id="coinContainer">
+        <img id="coinImage" src="./assets/image/coin.webp" alt="Coin">
+      </div>
+    </div>
+    <!-- Кнопка открытия модального окна обмена -->
+    <div>
+      <button id="openModalButton">Открыть обмен</button>
+    </div>
+    <!-- Кнопка запуска игры "Найди пару" -->
+    <div>
+      <button id="startPairGameButton">Найди пару (10 алмазов)</button>
+    </div>
+  </div>
+
+  <!-- Модальное окно обмена монет на алмазы -->
+  <div id="myModal" class="modal">
+    <div class="modal-content">
+      <span class="close" id="closeExchangeModal">&times;</span>
+      <h2>Обмен коинов на алмазы</h2>
+      <p id="modalCoinDisplay">
+        <img src="./assets/image/coin.gif" alt="Coin" style="width:5vw; vertical-align:middle;">
+        <span id="coinCountModal">0</span>
+      </p>
+      <p id="modalDiamondDisplay">
+        <img src="./assets/image/diamond.gif" alt="Diamond" style="width:5vw; vertical-align:middle;">
+        <span id="diamondCountModal">0</span>
+      </p>
+      <!-- Кнопка обмена -->
+      <button id="exchangeButtonModal">Обменять (100:1)</button>
+      <!-- Выбор количества для вывода -->
+      <div class="withdraw-amount-container">
+        <p>Выберите количество для вывода:</p>
+        <div class="amount-options" id="amountOptions">
+          <div class="amount-option" data-value="100">
+            <img src="./assets/image/diamond.gif" alt="Diamond"> 100
+          </div>
+          <div class="amount-option" data-value="310">
+            <img src="./assets/image/diamond.gif" alt="Diamond"> 310
+          </div>
+          <div class="amount-option" data-value="520">
+            <img src="./assets/image/diamond.gif" alt="Diamond"> 520
+          </div>
+          <div class="amount-option" data-value="1060">
+            <img src="./assets/image/diamond.gif" alt="Diamond"> 1060
+          </div>
+          <div class="amount-option" data-value="2180">
+            <img src="./assets/image/diamond.gif" alt="Diamond"> 2180
+          </div>
+          <div class="amount-option" data-value="5600">
+            <img src="./assets/image/diamond.gif" alt="Diamond"> 5600
+          </div>
+        </div>
+      </div>
+      <!-- Ввод UID -->
+      <input type="text" id="uidInput" placeholder="Введите ваш UID">
+      <!-- Кнопка вывода алмазов -->
+      <button id="withdrawButton">Вывести алмазы</button>
+    </div>
+  </div>
+
+  <!-- Модальное окно игры "Найди пару" -->
+  <div id="pairGameModal" class="modal">
+    <div class="modal-content">
+      <span class="close" id="closePairGameModal">&times;</span>
+      <h2>Игра "Найди пару"</h2>
+      <!-- Игровое поле, создающееся динамически -->
+      <div id="pairGameBoard" class="game-board"></div>
+      <!-- Блок с результатом игры -->
+      <div id="pairGameResult" class="game-result">
+        <p>Вы заработали: <span id="pairGameDiamondsEarned">0</span> алмазов</p>
+        <button id="claimPairGameReward">Забрать</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>

@@ -1,0 +1,20 @@
+{
+  "stripVisualRepeats": 3,
+  "retryCardIds": [104, 108],
+  "firstSpinCardId": 104,
+  "cards": [
+    { "id": 101, "code": "gems5600", "img": "img/dcase2.png", "title": "+5,600💎" },
+    { "id": 102, "code": "gems2180", "img": "img/dcase.png", "title": "+2,180💎" },
+    { "id": 103, "code": "win500", "img": "img/diamond.png", "title": "+500💎" },
+    { "id": 104, "code": "retry_a", "img": "img/1.png" },
+    { "id": 105, "code": "jackpot1", "img": "img/802000001.png", "title": "Купон джекпота" },
+    { "id": 106, "code": "cube1", "img": "img/801000183.png", "title": "Фрагмент Куба" },
+    { "id": 107, "code": "stashmap", "img": "img/500000007.png", "title": "Карта схрона" },
+    { "id": 108, "code": "retry_b", "img": "img/1.png" },
+    { "id": 109, "code": "cube2", "img": "img/801000183.png", "title": "Фрагмент Куба" },
+    { "id": 110, "code": "hunter", "img": "img/500000008.png", "title": "Жетон охотника" },
+    { "id": 111, "code": "msacura", "img": "img/710000345.png", "title": "Набор Сакура" },
+    { "id": 112, "code": "inyan", "img": "img/Icon_male_yinyang.png", "title": "Набор Инь-Янь" },
+    { "id": 113, "code": "jackpot2", "img": "img/802000000.png", "title": "Купон джекпота" }
+  ]
+}

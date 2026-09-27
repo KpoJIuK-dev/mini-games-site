@@ -1,0 +1,203 @@
+/* для всех элементов ограничиваем их размеры размерами блока */
+* {
+  box-sizing: border-box;
+}
+
+/* Общие настройки страницы */
+html, body {
+  height: 100%;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  background: #87CEEB; /* Голубой фон */
+  font-family: "Arial", sans-serif;
+  display: flex;
+  flex-direction: column; /* Размещение сверху вниз */
+  align-items: center;
+  justify-content: flex-start;
+  padding: 20px 0;
+}
+
+/* Стили прелоадера */
+.preloader {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: #87CEEB;
+  z-index: 20; /* Поверх всех элементов */
+}
+
+.preloader img {
+  width: 100px; /* Размер GIF-прелоадера */
+  height: 100px;
+}
+
+/* Стили для таймера и счетчика очков */
+.header {
+  display: flex;
+  justify-content: center; /* Центрируем таймер и счет */
+  gap: 20px; /* Расстояние между таймером и счетчиком */
+  width: 100%;
+  max-width: 600px;
+  margin-bottom: 20px;
+}
+
+.timer, .score {
+  font-size: 24px;
+  color: #333;
+  text-align: center;
+  font-weight: bold;
+  background-color: #ffffff; /* Белый фон */
+  border: 2px solid #8A2BE2; /* Фиолетовая рамка */
+  padding: 10px 20px;
+  border-radius: 10px; /* Округлые углы */
+  min-width: 120px; /* Минимальная ширина для одинаковых блоков */
+}
+
+/* Стили основного блока */
+.wrap {
+  width: 100%;
+  max-width: 600px; /* Ограничиваем ширину игрового поля */
+  aspect-ratio: 6 / 8; /* Соотношение сторон 6x8 для сетки */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+/* Блок с игрой */
+.game {
+  display: flex;
+  flex-wrap: wrap;
+  width: 100%;
+  height: 100%;
+}
+
+/* Стили карточек */
+.card {
+  width: calc(100% / 6 - 10px); /* 6 карточек в ряд */
+  height: calc(100% / 8 - 10px); /* 8 рядов карточек */
+  margin: 5px;
+  text-align: center;
+  position: relative;
+  cursor: pointer;
+  border-radius: 10px; /* Округлые углы для карточек */
+  overflow: hidden; /* Скрывает содержимое, выходящее за границы */
+}
+
+/* Внутренняя часть карточки */
+.card .inside {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transform-style: preserve-3d;
+  transition: transform 0.4s ease-in-out;
+  background: white;
+  border-radius: 10px; /* Округлые углы для внутренней части */
+  border: 2px solid #8A2BE2; /* Фиолетовая рамка */
+}
+
+.card .front, .card .back {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  backface-visibility: hidden;
+  border-radius: 10px;
+}
+
+.card .front {
+  transform: rotateY(-180deg);
+  background: #f0f0f0;
+}
+
+.card .back {
+  background: #6285c9;
+}
+
+.card .front img, .card .back img {
+  max-width: 100%;
+  max-height: 100%;
+}
+
+.card .inside.picked, .card .inside.matched {
+  transform: rotateY(180deg);
+}
+
+@keyframes matchAnim {
+  0% { background: #bcffcc; }
+  100% { background: white; }
+}
+
+.card .inside.matched {
+  animation: 1s matchAnim ease-in-out;
+  animation-delay: 0.4s;
+}
+
+/* Модальное окно */
+.modal-overlay {
+  display: none; /* Скрыто по умолчанию */
+  background: rgba(0, 0, 0, 0.8); /* Затемнение фона */
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 10; /* Убедимся, что оно выше карточек */
+}
+
+.modal {
+  position: relative;
+  width: 90%;
+  max-width: 500px;
+  background: white;
+  padding: 20px;
+  text-align: center;
+  border-radius: 15px; /* Округлые углы для модального окна */
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* Тень для эффекта всплытия */
+}
+
+/* Стили для иконки победы */
+.winner-icon {
+  width: 80px; /* Ширина иконки */
+  height: 80px;
+  margin-bottom: 10px; /* Отступ снизу для разделения с текстом */
+}
+
+.modal .winner {
+  font-size: 40px;
+  color: #4d4d4d;
+}
+
+.modal .final-score {
+  font-size: 24px;
+  color: #333;
+  margin-top: 10px;
+}
+
+.modal .claim {
+  margin-top: 20px;
+  padding: 10px 20px;
+  font-size: 20px;
+  border: none;
+  background: #4d4d4d;
+  color: white;
+  cursor: pointer;
+  border-radius: 5px; /* Округлые углы для кнопки */
+}
+
+.modal .claim:hover {
+  background: black;
+}

@@ -1,0 +1,84 @@
+<!doctype html>
+<html lang="ru" data-font="d" data-console="pro">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#120e0a">
+<title>Вход — Аркада Free Fire</title>
+<link rel="icon" href="assets/img/diamond.png">
+<script>
+(function () {
+  var root = document.documentElement;
+  var now = new Date();
+  var byWeekday = ['c', 'a', 'b', 'c', 'd', 'a', 'b'];
+  var font = /[?&]font=([abcd])/.exec(location.search);
+  var term = /[?&]console=(pro|led)/.exec(location.search);
+  root.dataset.font = font ? font[1] : byWeekday[now.getDay()];
+  root.dataset.console = term ? term[1] : (now.getDate() % 2 ? 'led' : 'pro');
+})();
+</script>
+<link rel="stylesheet" href="css/fonts.css">
+<link rel="stylesheet" href="css/type.css">
+<link rel="stylesheet" href="css/app.css">
+</head>
+<body>
+<div class="home-background" aria-hidden="true"></div>
+<header class="topbar">
+  <div class="brandline">
+    <span class="brand-ff">FREEF<span class="i">I</span>RE</span>
+    <span class="brand-x">×</span>
+    <span class="brand-para">GARENA.WIN</span>
+  </div>
+</header>
+<main class="sheet">
+  <p class="demo-tag">Вход по EAT</p>
+  <h1 class="main__title">Аккаунт</h1>
+  <p class="lede">Войди через Garena. В истории браузера ищи ссылку с eat=, например discstore.kiosgamer.co.id. Скопируй её целиком. Сам токен на этом устройстве не хранится.</p>
+  <p class="uid-label">Провайдер Garena</p>
+  <div class="provider-grid">
+    <a class="provider-chip" href="https://auth.garena.com/universal/oauth?platform=8&amp;response_type=code&amp;locale=en-SG&amp;client_id=100067&amp;redirect_uri=https://api.ff.garena.co.id/auth/auth/callback_n?site=https://api-discountstore.kiosgamer.gameid.garena.co.id/oauth/callback_redirect/" target="_blank" rel="noopener noreferrer" title="Google" aria-label="Google">
+      <img src="assets/img/auth/google.png" alt="Google" width="56" height="56">
+    </a>
+    <a class="provider-chip" href="https://auth.garena.com/universal/oauth?platform=3&amp;response_type=code&amp;locale=en-SG&amp;client_id=100067&amp;redirect_uri=https://api.ff.garena.co.id/auth/auth/callback_n?site=https://api-discountstore.kiosgamer.gameid.garena.co.id/oauth/callback_redirect/" target="_blank" rel="noopener noreferrer" title="Facebook" aria-label="Facebook">
+      <img src="assets/img/auth/facebook.png" alt="Facebook" width="56" height="56">
+    </a>
+    <a class="provider-chip" href="https://auth.garena.com/universal/oauth?platform=10&amp;response_type=code&amp;locale=en-SG&amp;client_id=100067&amp;redirect_uri=https://api.ff.garena.co.id/auth/auth/callback_n?site=https://api-discountstore.kiosgamer.gameid.garena.co.id/oauth/callback_redirect/" target="_blank" rel="noopener noreferrer" title="Apple" aria-label="Apple">
+      <img src="assets/img/auth/apple.png" alt="Apple" width="56" height="56">
+    </a>
+    <a class="provider-chip" href="https://auth.garena.com/universal/oauth?platform=11&amp;response_type=code&amp;locale=en-SG&amp;client_id=100067&amp;redirect_uri=https://api.ff.garena.co.id/auth/auth/callback_n?site=https://api-discountstore.kiosgamer.gameid.garena.co.id/oauth/callback_redirect/" target="_blank" rel="noopener noreferrer" title="X" aria-label="X">
+      <img src="assets/img/auth/x.png" alt="X" width="56" height="56">
+    </a>
+    <a class="provider-chip" href="https://auth.garena.com/universal/oauth?platform=5&amp;response_type=code&amp;locale=en-SG&amp;client_id=100067&amp;redirect_uri=https://api.ff.garena.co.id/auth/auth/callback_n?site=https://api-discountstore.kiosgamer.gameid.garena.co.id/oauth/callback_redirect/" target="_blank" rel="noopener noreferrer" title="VK" aria-label="VK">
+      <img src="assets/img/auth/vk.png" alt="VK" width="56" height="56">
+    </a>
+  </div>
+  <form id="eat-form" class="panel stack">
+    <label for="eat-input">Ссылка с eat= или сам токен</label>
+    <textarea id="eat-input" class="field-input" rows="4" autocomplete="off" spellcheck="false" placeholder="https://discstore.kiosgamer.co.id/?eat=…&amp;region=RU&amp;account_id=…" required></textarea>
+    <p id="eat-error" class="form-error" hidden></p>
+    <button id="eat-button" class="cta gold" type="submit">Прочитать аккаунт</button>
+  </form>
+  <section id="account-card" class="panel" hidden>
+    <h2 class="home-panel__title">Профиль</h2>
+    <p id="account-line"></p>
+    <p class="muted" id="signature-line"></p>
+    <p class="muted">После согласия этот текст сам запишется в подпись. Цвета — метки [RRGGBB].</p>
+    <div class="promo-box sig-preview" id="promo-preview"></div>
+    <button id="copy-signature" class="cta" type="button">Скопировать текст подписи</button>
+    <label class="check">
+      <input id="consent" type="checkbox">
+      <span>Я владелец этого аккаунта и согласен держать промо в подписи семь дней. Без этого вывод не откроется.</span>
+    </label>
+    <div class="row">
+      <button id="consent-button" class="cta gold" type="button">Поставить подпись</button>
+      <button id="recheck-button" class="cta" type="button">Проверить подпись</button>
+    </div>
+    <p id="hold-line" class="muted"></p>
+    <p class="row"><a class="cta" href="index.html">В зал</a></p>
+  </section>
+</main>
+<script src="js/promo-config.js"></script>
+<script src="js/account.js"></script>
+<script src="js/login.js"></script>
+</body>
+</html>

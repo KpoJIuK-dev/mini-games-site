@@ -1,0 +1,7 @@
+node_modules/
+reward ff garena/MS_UNLIMITED/
+.env
+.env.*
+*.log
+_srv_err.txt
+_srv_out.txt

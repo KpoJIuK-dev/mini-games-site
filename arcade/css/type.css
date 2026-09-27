@@ -1,0 +1,82 @@
+/* Typography variants. The active one is picked per weekday by the inline script in index.html.
+   Fonts are only downloaded for the variant that is actually applied. */
+
+/* --- A: PT Mono + Press Start 2P -------------------------------------- */
+html[data-font="a"] body,
+html[data-font="a"] .list__item,
+html[data-font="a"] .input,
+html[data-font="a"] .form-error,
+html[data-font="a"] .profile-result,
+html[data-font="a"] .profile-result small { font-family: 'PT Mono', monospace; }
+html[data-font="a"] .brand-ff,
+html[data-font="a"] .brand-para,
+html[data-font="a"] .brand-x,
+html[data-font="a"] .main__title,
+html[data-font="a"] .home-panel__title,
+html[data-font="a"] .telegram-link,
+html[data-font="a"] #uid-button { font-family: 'Press Start 2P', monospace; font-style: normal; }
+html[data-font="a"] .brand-ff,
+html[data-font="a"] .brand-para { font-size: 13px; letter-spacing: 0; }
+html[data-font="a"] .brand-x { font-size: 11px; }
+html[data-font="a"] .main__title { font-size: 20px; line-height: 1.4; }
+html[data-font="a"] .home-panel__title { font-size: 13px; }
+html[data-font="a"] .telegram-link { font-size: 15px; letter-spacing: 0; }
+html[data-font="a"] #uid-button { font-size: 11px; }
+
+/* --- B: PT Mono + Handjet --------------------------------------------- */
+html[data-font="b"] body,
+html[data-font="b"] .list__item,
+html[data-font="b"] .input,
+html[data-font="b"] .form-error,
+html[data-font="b"] .profile-result,
+html[data-font="b"] .profile-result small { font-family: 'PT Mono', monospace; }
+html[data-font="b"] .brand-ff,
+html[data-font="b"] .brand-para,
+html[data-font="b"] .brand-x,
+html[data-font="b"] .main__title,
+html[data-font="b"] .home-panel__title,
+html[data-font="b"] .telegram-link,
+html[data-font="b"] #uid-button { font-family: 'Handjet', monospace; font-style: normal; }
+html[data-font="b"] .brand-ff,
+html[data-font="b"] .brand-para { font-size: 30px; }
+html[data-font="b"] .main__title { font-size: 34px; }
+html[data-font="b"] .home-panel__title { font-size: 24px; }
+html[data-font="b"] .telegram-link { font-size: 28px; }
+html[data-font="b"] #uid-button { font-size: 20px; }
+
+/* --- C: IBM Plex Mono ------------------------------------------------- */
+html[data-font="c"] body,
+html[data-font="c"] .list__item,
+html[data-font="c"] .input,
+html[data-font="c"] .form-error,
+html[data-font="c"] #uid-button,
+html[data-font="c"] .profile-result,
+html[data-font="c"] .profile-result small,
+html[data-font="c"] .brand-ff,
+html[data-font="c"] .brand-para,
+html[data-font="c"] .brand-x,
+html[data-font="c"] .main__title,
+html[data-font="c"] .home-panel__title,
+html[data-font="c"] .telegram-link { font-family: 'IBM Plex Mono', monospace; }
+
+/* --- D: Anonymous Pro ------------------------------------------------- */
+html[data-font="d"] body,
+html[data-font="d"] .list__item,
+html[data-font="d"] .input,
+html[data-font="d"] .form-error,
+html[data-font="d"] #uid-button,
+html[data-font="d"] .profile-result,
+html[data-font="d"] .profile-result small,
+html[data-font="d"] .brand-ff,
+html[data-font="d"] .brand-para,
+html[data-font="d"] .brand-x,
+html[data-font="d"] .main__title,
+html[data-font="d"] .home-panel__title,
+html[data-font="d"] .telegram-link { font-family: 'Anonymous Pro', monospace; }
+
+/* --- Console: own rhythm, alternates by even/odd day of the month ------ */
+html[data-console="pro"] .profile-log,
+html[data-console="pro"] .console-progress { font-family: 'Anonymous Pro', monospace; }
+html[data-console="led"] .profile-log,
+html[data-console="led"] .console-progress { font-family: 'Handjet', monospace; }
+html[data-console="led"] .profile-log { font-size: 19px; }

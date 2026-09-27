@@ -1,0 +1,12 @@
+{
+  "name": "iphone-roulette",
+  "private": true,
+  "scripts": {
+    "dev": "live-server . --port=5500 --open=/index.html",
+    "serve": "serve . -l 5501"
+  },
+  "devDependencies": {
+    "live-server": "^1.2.2",
+    "serve": "^14.2.4"
+  }
+}

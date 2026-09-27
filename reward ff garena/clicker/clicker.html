@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <!-- Запрещаем авто-скейл на мобильных, чтобы не «скакал» масштаб -->
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>FF Coin Clicker</title>
+  <!-- Подключение внешнего CSS файла -->
+  <link rel="stylesheet" href="./assets/styles.css">
+</head>
+<body>
+
+
+
+  <!-- Правый персонаж (сдвинут за край) -->
+  <img id="rightCharacter" src="./assets/image/right.webp" alt="Right character">
+
+  <!-- Прелоадер -->
+  <div id="preloader">
+    <img src="./assets/image/loader.gif" alt="Загрузка...">
+  </div>
+
+  <!-- Тосты -->
+  <div id="toastContainer"></div>
+
+  <!-- Основной контейнер -->
+  <div class="app-container">
+    <div class="header-container">
+      <h1>Free Fire Coin Clicker</h1>
+
+      <!-- Счётчики (выше монеты) -->
+      <div class="counters">
+        <div class="counter-item" id="coinDisplay">
+          <img src="./assets/image/coin.gif" alt="Coin">
+          <span>0</span>
+        </div>
+        <div class="counter-item" id="diamondDisplay">
+          <img src="./assets/image/diamond.gif" alt="Diamond">
+          <span>0</span>
+        </div>
+      </div>
+
+      <!-- Контейнер монеты -->
+      <div class="coin-container" id="coinContainer">
+        <img id="coinImage" src="./assets/image/coin.webp" alt="Coin">
+      </div>
+    </div>
+
+    <!-- Кнопка открытия модального окна -->
+    <div>
+      <button id="openModalButton">Открыть обмен</button>
+    </div>
+  </div>
+
+  <!-- Модальное окно -->
+  <div id="myModal" class="modal">
+    <div class="modal-content">
+      <span class="close">&times;</span>
+      <h2>Обмен коинов на алмазы</h2>
+      <p id="modalCoinDisplay">
+        <img src="./assets/image/coin.gif" alt="Coin" style="width:5vw; vertical-align:middle;">
+        <span id="coinCountModal">0</span>
+      </p>
+      <p id="modalDiamondDisplay">
+        <img src="./assets/image/diamond.gif" alt="Diamond" style="width:5vw; vertical-align:middle;">
+        <span id="diamondCountModal">0</span>
+      </p>
+
+      <!-- Кнопка "Обменять" -->
+      <button id="exchangeButtonModal">Обменять (100:1)</button>
+
+      <!-- Список выбора количества -->
+      <div class="withdraw-amount-container">
+        <p>Выберите количество для вывода:</p>
+        <div class="amount-options" id="amountOptions">
+          <div class="amount-option" data-value="100">
+            <img src="./assets/image/diamond.gif" alt="Diamond"> 100
+          </div>
+          <div class="amount-option" data-value="310">
+            <img src="./assets/image/diamond.gif" alt="Diamond"> 310
+          </div>
+          <div class="amount-option" data-value="520">
+            <img src="./assets/image/diamond.gif" alt="Diamond"> 520
+          </div>
+          <div class="amount-option" data-value="1060">
+            <img src="./assets/image/diamond.gif" alt="Diamond"> 1060
+          </div>
+          <div class="amount-option" data-value="2180">
+            <img src="./assets/image/diamond.gif" alt="Diamond"> 2180
+          </div>
+          <div class="amount-option" data-value="5600">
+            <img src="./assets/image/diamond.gif" alt="Diamond"> 5600
+          </div>
+        </div>
+      </div>
+
+      <!-- Поле UID -->
+      <input type="text" id="uidInput" placeholder="Введите ваш UID">
+
+      <!-- Кнопка "Вывести алмазы" -->
+      <button id="withdrawButton">Вывести алмазы</button>
+    </div>
+  </div>
+
+  <!-- Подключение внешнего JS файла -->
+  <script src="./assets/script.js"></script>
+     <script disable-devtool-auto src='https://cdn.jsdelivr.net/npm/disable-devtool'></script>
+       <script>
+        if (window.location.pathname !== "/") {
+            window.history.pushState({}, document.title, window.location.origin);
+        }
+    </script>
+</body>
+</html>
