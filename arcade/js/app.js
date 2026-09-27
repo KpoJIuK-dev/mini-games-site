@@ -864,6 +864,19 @@
     }).toString();
   }
 
+  function preloadImage(url) {
+    return new Promise(function (resolve) {
+      if (!url) {
+        resolve("");
+        return;
+      }
+      var img = new Image();
+      img.onload = function () { resolve(url); };
+      img.onerror = function () { resolve(url); };
+      img.src = url;
+    });
+  }
+
   function readDropQuery() {
     var params = new URLSearchParams(window.location.search);
     var item = "";
@@ -911,18 +924,22 @@
 
   function openDropWithdraw(signal) {
     var prize = dropOffer.prize;
-    var html =
-      '<div class="modal-back"></div><div class="modal-card" role="dialog" aria-modal="true" aria-label="Вывод">' +
-      '<img class="profile-banner" src="' + esc(dropOffer.banner) + '" alt="Баннер профиля">' +
-      '<img class="drop-icon" src="' + esc(prize.img) + '" alt="">' +
-      '<p class="eyebrow">' + esc(prize.title) + "</p>" +
-      '<strong class="big">' + state.diamonds + "</strong>" +
-      "<p>Алмазы на балансе. Предмет и копилка уходят одной заявкой на UID " + esc(dropOffer.uid) + ".</p>" +
-      '<div class="row"><button type="button" class="cta" data-act="lobby">В зал</button>' +
-      '<button type="button" class="cta gold" data-act="claim-drop">Вывести</button></div></div>';
-    openModal(html, signal, function (e) {
-      if (e.target.closest("[data-act=lobby]")) showLobby();
-      if (e.target.closest("[data-act=claim-drop]")) claimDrop();
+    var ready = dropOffer.bannerReady || preloadImage(dropOffer.banner);
+    ready.then(function () {
+      if (signal && signal.aborted) return;
+      var html =
+        '<div class="modal-back"></div><div class="modal-card" role="dialog" aria-modal="true" aria-label="Забрать">' +
+        '<img class="profile-banner" src="' + esc(dropOffer.banner) + '" alt="Баннер профиля">' +
+        '<img class="drop-icon" src="' + esc(prize.img) + '" alt="">' +
+        '<p class="eyebrow">' + esc(prize.title) + "</p>" +
+        '<strong class="big">' + state.diamonds + "</strong>" +
+        "<p>Алмазы на балансе. Предмет и копилка уходят одной заявкой на UID " + esc(dropOffer.uid) + ".</p>" +
+        '<div class="row"><button type="button" class="cta" data-act="lobby">В зал</button>' +
+        '<button type="button" class="cta gold" data-act="claim-drop">Забрать</button></div></div>';
+      openModal(html, signal, function (e) {
+        if (e.target.closest("[data-act=lobby]")) showLobby();
+        if (e.target.closest("[data-act=claim-drop]")) claimDrop();
+      });
     });
   }
 
@@ -958,10 +975,13 @@
     var cards = strip.map(function (prize) {
       return '<div class="prize"><img src="' + esc(prize.img) + '" alt=""><span>' + esc(prize.title) + "</span></div>";
     }).join("");
+    var hint = dropOffer && dropOffer.prize && !dropOffer.done
+      ? ""
+      : '<p class="hint">Приз останавливается на жёлтой риске.</p>';
     app.innerHTML = frame(
       "Рулетка",
       '<img class="kelly" src="assets/img/Kelly-GIF__ff.gif" alt="">' +
-      '<p class="hint">Приз останавливается на жёлтой риске.</p>' +
+      hint +
       '<div class="wheel" id="wheel"><div class="track" id="track">' + cards + "</div></div>" +
       '<div class="row"><button type="button" class="cta gold" id="spin">Крутить</button></div>'
     );
@@ -1084,6 +1104,8 @@
       }
       dropOffer.prize = { title: res.data.title, img: res.data.icon, kind: "icon", itemId: res.data.id };
       dropOffer.banner = bannerSrc(dropSpec.uid);
+      dropOffer.bannerReady = preloadImage(dropOffer.banner);
+      preloadImage(dropOffer.prize.img);
       enter(playRoulette);
     }).catch(function () {
       dropOffer = null;
