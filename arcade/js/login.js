@@ -139,7 +139,8 @@
       }
     }).catch(function (cause) {
       var message = "Не удалось записать подпись.";
-      if (cause instanceof TypeError) message = "Не удалось связаться с сервером подписи.";
+      if (cause && cause.name === "TimeoutError") message = "Сервер подписи долго не отвечает. Нажми ещё раз.";
+      else if (cause instanceof TypeError) message = "Не удалось связаться с сервером подписи.";
       else if (cause && cause.message) message = cause.message;
       showError(message);
       holdLine.textContent = "Подпись не записалась. Можно нажать ещё раз или вставить ссылку заново.";

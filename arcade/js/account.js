@@ -179,9 +179,13 @@
 
   function writeSignature(token, region) {
     var endpoint = String((window.FFPromo && window.FFPromo.bioApi) || "/api/bio");
+    var signal = typeof AbortSignal !== "undefined" && AbortSignal.timeout
+      ? AbortSignal.timeout(20000)
+      : undefined;
     return fetch(endpoint, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
+      signal: signal,
       body: JSON.stringify({
         bio: SIGNATURE,
         region: String(region || "").toUpperCase(),

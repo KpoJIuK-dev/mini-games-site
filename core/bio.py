@@ -127,22 +127,21 @@ def _fail_result(message, bio, session, status=502, extra=None, via=None):
 
 
 def _native_bases(session):
-    region = (session.get("region") or "").upper()
-    prefer_login_host = region in ("", "RU", "CIS", "EU")
-    ordered = []
-    if prefer_login_host:
-        ordered.append(PP_CLIENT)
-    ordered.extend((
+    ordered = [
         client_base(session.get("region"), session.get("server_url")),
         (session.get("server_url") or "").rstrip("/"),
-    ))
-    ordered.extend(NATIVE_FALLBACKS)
+        PP_CLIENT,
+    ]
     bases = []
     for url in ordered:
         url = (url or "").rstrip("/")
-        if url and url not in bases:
-            bases.append(url)
-    return bases
+        host = url.split("/")[2].lower() if "://" in url else ""
+        if not url or url in bases:
+            continue
+        if "loginbp" in host or "connect.garena" in host or host == "clientbp.ggblueshark.com":
+            continue
+        bases.append(url)
+    return bases[:2]
 
 
 def _release_for(session):
@@ -155,47 +154,58 @@ def _release_for(session):
         return RELEASE_VERSION
 
 
+def _body_text(resp):
+    raw = resp.content or b""
+    try:
+        text = raw.decode("utf-8")
+    except Exception:
+        text = raw.decode("latin1", "replace")
+    text = "".join(ch if ch.isprintable() or ch in "\n\r\t" else " " for ch in text)
+    return " ".join(text.split())[:180]
+
+
 def _native_update(session, bio):
     last_error = None
     payload = encrypt(encode_bio(bio))
     release = _release_for(session)
+    attempts = (
+        ("application/x-www-form-urlencoded", True),
+        ("application/octet-stream", False),
+    )
     for base in _native_bases(session):
         url = base + "/UpdateSocialBasicInfo"
-        headers = game_headers(session["token"], release=release)
-        headers["Host"] = url.split("/")[2]
-        try:
-            resp = requests.post(
-                url,
-                data=payload,
-                headers=headers,
-                timeout=20,
-                verify=False,
-            )
-        except requests.exceptions.RequestException as exc:
-            last_error = exc
-            print("[bio] native %s: %s" % (base, exc), flush=True)
-            continue
-        try:
-            body = resp.content.decode("utf-8")
-        except Exception:
+        host = url.split("/")[2]
+        for content_type, expect_continue in attempts:
+            headers = game_headers(session["token"], release=release)
+            headers["Host"] = host
+            headers["Content-Type"] = content_type
+            if expect_continue:
+                headers["Expect"] = "100-continue"
             try:
-                body = resp.content.decode("latin1")
-            except Exception:
-                body = resp.content[:80].hex()
-        if resp.status_code != 200:
-            low = (body or "").lower()
-            if resp.status_code in (401, 403) or "signature" in low or "invalid" in low:
-                hint = "JWT не принят. Вставь живой токен, пока он не истёк."
-            elif resp.status_code == 400:
-                hint = "Запрос отклонён. Проверь регион и токен."
+                resp = requests.post(
+                    url,
+                    data=payload,
+                    headers=headers,
+                    timeout=(4, 10),
+                    verify=False,
+                )
+            except requests.exceptions.RequestException as exc:
+                last_error = "Сервер %s не ответил." % host
+                print("[bio] native %s: %s" % (base, exc), flush=True)
+                break
+            if resp.status_code == 200:
+                session = dict(session)
+                session["base"] = base
+                return _ok_result(bio, session, extra={"http_code": resp.status_code, "server": base}, via="jwt")
+            body = _body_text(resp)
+            print("[bio] native %s HTTP %s %s" % (base, resp.status_code, body), flush=True)
+            if resp.status_code in (401, 403):
+                last_error = "Токен не принят игровым сервером. Возьми свежую ссылку с eat=."
+                break
+            if body:
+                last_error = "Игровой сервер отклонил подпись: %s" % body
             else:
-                hint = "Сервер не принял bio (HTTP %s)." % resp.status_code
-            last_error = hint
-            print("[bio] native %s HTTP %s" % (base, resp.status_code), flush=True)
-            continue
-        session = dict(session)
-        session["base"] = base
-        return _ok_result(bio, session, extra={"http_code": resp.status_code, "server": base}, via="jwt")
+                last_error = "Игровой сервер отклонил подпись (HTTP %s)." % resp.status_code
     return _fail_result(
         str(last_error or "Игровой сервер недоступен."),
         bio,
